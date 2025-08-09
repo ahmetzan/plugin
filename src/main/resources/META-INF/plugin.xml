@@ -1,0 +1,40 @@
+<idea-plugin>
+    <id>com.example.entitydto</id>
+    <name>Entity-DTO Converter</name>
+    <vendor email="you@example.com" url="https://example.com">Your Name</vendor>
+
+    <description>
+        Kotlin-based IntelliJ plugin to generate converter methods between Entity and DTO classes.
+    </description>
+
+    <depends>com.intellij.modules.java</depends>
+
+    <actions>
+
+        <group id="NextGroup" text="Next" description="Next group for custom actions" popup="true">
+
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+            <!-- Project View sağ tık menüsünde -->
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <!-- Editör sağ tık menüsünde -->
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+
+        </group>
+
+        <action id="com.example.converter"
+                class="com.example.converter.GenerateConverterAction"
+                text="Generate Converter"
+                description="Generate converter methods between Entity and DTO">
+            <!-- Alt+Insert menüsünde -->
+            <add-to-group group-id="NextGroup" anchor="last"/>
+        </action>
+
+        <action id="com.example.repository"
+                class="com.example.repository.GenerateRepositoryAction"
+                text="Generate Repository"
+                description="Generate Repository Class">
+            <!-- Alt+Insert menüsünde -->
+            <add-to-group group-id="NextGroup" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>
