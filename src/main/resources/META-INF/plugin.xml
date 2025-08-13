@@ -36,5 +36,13 @@
             <!-- Alt+Insert menüsünde -->
             <add-to-group group-id="NextGroup" anchor="last"/>
         </action>
+
+        <action id="com.example.constant"
+                class="com.example.constant.GenerateConstantsAction"
+                text="Generate Constant"
+                description="Generate Constant Class">
+            <!-- Alt+Insert menüsünde -->
+            <add-to-group group-id="NextGroup" anchor="last"/>
+        </action>
     </actions>
 </idea-plugin>
