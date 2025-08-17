@@ -21,6 +21,7 @@
 
         </group>
 
+
         <action id="com.example.converter"
                 class="com.example.converter.GenerateConverterAction"
                 text="Generate Converter"
@@ -44,5 +45,22 @@
             <!-- Alt+Insert menüsünde -->
             <add-to-group group-id="NextGroup" anchor="last"/>
         </action>
+
+        <action id="com.migros.asset.AddErrorMessageToYamlAction"
+                class="com.example.error.AddErrorMessageToYamlAction"
+                text="Add To ErrorMessage YAML"
+                description="Append selected error key to error messages YAML with next service-scoped code">
+            <!-- Editor sağ tık menüsü -->
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <!-- (Opsiyonel) Kısayol bağlamak istersen: -->
+            <!-- <keyboard-shortcut keymap="Default" first-keystroke="ctrl shift Y"/> -->
+            <!-- <keyboard-shortcut keymap="Default for macOS" first-keystroke="shift meta Y"/> -->
+        </action>
     </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Custom Notifications"
+                           displayType="BALLOON"
+                           isLogByDefault="true"/>
+    </extensions>
 </idea-plugin>
