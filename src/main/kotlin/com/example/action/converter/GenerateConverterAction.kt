@@ -1,4 +1,4 @@
-package com.example.converter
+package com.example.action.converter
 
 import com.intellij.ide.util.PackageChooserDialog
 import com.intellij.ide.util.TreeClassChooserFactory

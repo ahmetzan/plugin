@@ -36,6 +36,7 @@ intellijPlatform {
             Initial version with Entity ↔ DTO converter support.
         """.trimIndent()
     }
+
 }
 
 tasks {

@@ -1,4 +1,4 @@
-package com.example.error
+package com.example.action.error
 
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
@@ -19,7 +19,6 @@ import com.intellij.psi.*
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
-import javax.swing.JOptionPane
 
 class AddErrorMessageToYamlAction : AnAction() {
 

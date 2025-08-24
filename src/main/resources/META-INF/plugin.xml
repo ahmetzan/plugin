@@ -22,24 +22,24 @@
         </group>
 
 
-        <action id="com.example.converter"
-                class="com.example.converter.GenerateConverterAction"
+        <action id="com.example.action.converter"
+                class="com.example.action.converter.GenerateConverterAction"
                 text="Generate Converter"
                 description="Generate converter methods between Entity and DTO">
             <!-- Alt+Insert menüsünde -->
             <add-to-group group-id="NextGroup" anchor="last"/>
         </action>
 
-        <action id="com.example.repository"
-                class="com.example.repository.GenerateRepositoryAction"
+        <action id="com.example.action.repository"
+                class="com.example.action.repository.GenerateRepositoryAction"
                 text="Generate Repository"
                 description="Generate Repository Class">
             <!-- Alt+Insert menüsünde -->
             <add-to-group group-id="NextGroup" anchor="last"/>
         </action>
 
-        <action id="com.example.constant"
-                class="com.example.constant.GenerateConstantsAction"
+        <action id="com.example.action.constant"
+                class="com.example.action.constant.GenerateConstantsAction"
                 text="Generate Constant"
                 description="Generate Constant Class">
             <!-- Alt+Insert menüsünde -->
@@ -47,7 +47,7 @@
         </action>
 
         <action id="com.migros.asset.AddErrorMessageToYamlAction"
-                class="com.example.error.AddErrorMessageToYamlAction"
+                class="com.example.action.error.AddErrorMessageToYamlAction"
                 text="Add To ErrorMessage YAML"
                 description="Append selected error key to error messages YAML with next service-scoped code">
             <!-- Editor sağ tık menüsü -->
@@ -62,5 +62,21 @@
         <notificationGroup id="Custom Notifications"
                            displayType="BALLOON"
                            isLogByDefault="true"/>
+
+        <statusBarWidgetFactory
+                implementation="com.example.widget.statusbar.TimeWidgetFactory"/>
+
+<!--        <localInspection language="JAVA"-->
+<!--                         bundle="messages.InspectionBundle"-->
+<!--                         key="inspection.comparing.string.references.display.name"-->
+<!--                         groupPath="Java"-->
+<!--                         groupBundle="messages.InspectionsBundle"-->
+<!--                         groupKey="group.names.probable.bugs"-->
+<!--                         enabledByDefault="true"-->
+<!--                         level="WARNING"-->
+<!--                         implementationClass="com.example.inspection.ComparingStringReferencesInspection"/>-->
+
+        <checkinHandlerFactory implementation="com.example.hook.CommitMessageCheckFactory"/>
+
     </extensions>
 </idea-plugin>
