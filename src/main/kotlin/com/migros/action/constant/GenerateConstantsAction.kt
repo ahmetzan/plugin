@@ -1,4 +1,4 @@
-package com.example.action.constant
+package com.migros.action.constant
 
 import com.intellij.ide.util.PackageChooserDialog
 import com.intellij.openapi.actionSystem.ActionUpdateThread

@@ -1,4 +1,4 @@
-package com.example.hook
+package com.migros.hook
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages

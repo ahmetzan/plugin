@@ -1,4 +1,4 @@
-package com.example.action.repository
+package com.migros.action.repository
 
 import com.intellij.ide.util.PackageChooserDialog
 import com.intellij.openapi.actionSystem.ActionUpdateThread

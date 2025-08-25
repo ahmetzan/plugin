@@ -1,4 +1,4 @@
-package com.example.widget.statusbar
+package com.migros.widget.statusbar
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.StatusBar

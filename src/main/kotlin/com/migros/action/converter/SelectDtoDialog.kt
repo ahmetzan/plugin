@@ -1,4 +1,4 @@
-package com.example.action.converter
+package com.migros.action.converter
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBLabel

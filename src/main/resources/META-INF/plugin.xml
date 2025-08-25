@@ -1,17 +1,17 @@
 <idea-plugin>
-    <id>com.example.entitydto</id>
-    <name>Entity-DTO Converter</name>
+    <id>com.migros</id>
+    <name>Simplifier</name>
     <vendor email="you@example.com" url="https://example.com">Your Name</vendor>
 
     <description>
-        Kotlin-based IntelliJ plugin to generate converter methods between Entity and DTO classes.
+        A plugin to simplify repetitive coding tasks and enhance productivity.
     </description>
 
     <depends>com.intellij.modules.java</depends>
 
     <actions>
 
-        <group id="NextGroup" text="Next" description="Next group for custom actions" popup="true">
+        <group id="SimplifierGroup" text="Simplifier" description="Simplifier group for custom actions" popup="true">
 
             <add-to-group group-id="GenerateGroup" anchor="last"/>
             <!-- Project View sağ tık menüsünde -->
@@ -22,34 +22,34 @@
         </group>
 
 
-        <action id="com.example.action.converter"
-                class="com.example.action.converter.GenerateConverterAction"
+        <action id="com.migros.action.converter"
+                class="com.migros.action.converter.GenerateConverterAction"
                 text="Generate Converter"
                 description="Generate converter methods between Entity and DTO">
             <!-- Alt+Insert menüsünde -->
-            <add-to-group group-id="NextGroup" anchor="last"/>
+            <add-to-group group-id="SimplifierGroup" anchor="last"/>
         </action>
 
-        <action id="com.example.action.repository"
-                class="com.example.action.repository.GenerateRepositoryAction"
+        <action id="com.migros.action.repository"
+                class="com.migros.action.repository.GenerateRepositoryAction"
                 text="Generate Repository"
                 description="Generate Repository Class">
             <!-- Alt+Insert menüsünde -->
-            <add-to-group group-id="NextGroup" anchor="last"/>
+            <add-to-group group-id="SimplifierGroup" anchor="last"/>
         </action>
 
-        <action id="com.example.action.constant"
-                class="com.example.action.constant.GenerateConstantsAction"
+        <action id="com.migros.action.constant"
+                class="com.migros.action.constant.GenerateConstantsAction"
                 text="Generate Constant"
                 description="Generate Constant Class">
             <!-- Alt+Insert menüsünde -->
-            <add-to-group group-id="NextGroup" anchor="last"/>
+            <add-to-group group-id="SimplifierGroup" anchor="last"/>
         </action>
 
         <action id="com.migros.asset.AddErrorMessageToYamlAction"
-                class="com.example.action.error.AddErrorMessageToYamlAction"
+                class="com.migros.action.error.AddErrorMessageToYamlAction"
                 text="Add To ErrorMessage YAML"
-                description="Append selected error key to error messages YAML with next service-scoped code">
+                description="Append selected error key to error messages YAML with service-scoped code">
             <!-- Editor sağ tık menüsü -->
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <!-- (Opsiyonel) Kısayol bağlamak istersen: -->
@@ -64,7 +64,7 @@
                            isLogByDefault="true"/>
 
         <statusBarWidgetFactory
-                implementation="com.example.widget.statusbar.TimeWidgetFactory"/>
+                implementation="com.migros.widget.statusbar.TimeWidgetFactory"/>
 
 <!--        <localInspection language="JAVA"-->
 <!--                         bundle="messages.InspectionBundle"-->
@@ -74,9 +74,9 @@
 <!--                         groupKey="group.names.probable.bugs"-->
 <!--                         enabledByDefault="true"-->
 <!--                         level="WARNING"-->
-<!--                         implementationClass="com.example.inspection.ComparingStringReferencesInspection"/>-->
+<!--                         implementationClass="com.migros.inspection.ComparingStringReferencesInspection"/>-->
 
-        <checkinHandlerFactory implementation="com.example.hook.CommitMessageCheckFactory"/>
+        <checkinHandlerFactory implementation="com.migros.hook.CommitMessageCheckFactory"/>
 
     </extensions>
 </idea-plugin>

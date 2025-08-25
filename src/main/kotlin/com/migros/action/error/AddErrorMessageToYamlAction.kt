@@ -1,4 +1,4 @@
-package com.example.action.error
+package com.migros.action.error
 
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
