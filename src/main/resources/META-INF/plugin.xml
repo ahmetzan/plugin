@@ -64,6 +64,7 @@
                            isLogByDefault="true"/>
 
         <statusBarWidgetFactory
+                id="TimeWidget"
                 implementation="com.migros.widget.statusbar.TimeWidgetFactory"/>
 
 <!--        <localInspection language="JAVA"-->

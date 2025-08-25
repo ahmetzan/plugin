@@ -10,7 +10,7 @@ import java.util.Timer
 import java.util.TimerTask
 
 class TimeWidgetFactory : StatusBarWidgetFactory {
-    override fun getId() = "myplugin.time"
+    override fun getId() = "TimeWidget"
     override fun getDisplayName() = "Clock"
     override fun isAvailable(project: Project) = true
 
