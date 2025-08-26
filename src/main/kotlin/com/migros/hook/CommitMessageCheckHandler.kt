@@ -22,7 +22,7 @@ class CommitMessageCheckHandler(private val panel: CheckinProjectPanel) : Checki
 
         return object : RefreshableOnComponent {
             override fun getComponent() = panelUI
-            override fun refresh() {}
+//            override fun refresh() {}
             override fun saveState() {
                 shouldCheck = checkbox.isSelected
             }
@@ -43,11 +43,14 @@ class CommitMessageCheckHandler(private val panel: CheckinProjectPanel) : Checki
         if (!commitMessage.startsWith("$prefix |")) {
             val result = Messages.showYesNoDialog(
                 panel.project,
-                "Commit mesajı branch adına uygun değil.\n\n" +
-                        "Beklenen: \"$prefix | ...\"\n\nDevam etmek istiyor musun?",
-                "Commit Mesajı Uyarısı",
-                "Devam Et",
-                "İptal Et",
+                """
+                    Format isn't appropriate
+                    Expected format: $prefix | ...
+                    Would you like to continue?
+                """.trimIndent(),
+                "Commit Message Warning",
+                "Continue",
+                "Cancel",
                 Messages.getWarningIcon()
             )
             return if (result == Messages.YES) ReturnResult.COMMIT else ReturnResult.CANCEL
@@ -57,9 +60,7 @@ class CommitMessageCheckHandler(private val panel: CheckinProjectPanel) : Checki
     }
 
     private fun extractPrefixFromBranch(branchName: String): String? {
-        val regex = Regex("""(?:story|bugfix)/([A-Z]+-\d+)|rc/([\d.]+)""")
-        val match = regex.find(branchName) ?: return null
-        return match.groupValues.drop(1).firstOrNull { it.isNotBlank() }
+        return branchName.substringAfterLast('/')
     }
 
     private fun getGitBranchName(project: Project): String? {

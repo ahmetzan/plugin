@@ -1,0 +1,40 @@
+<html>
+<body>
+<h2>Suspicious equality check</h2>
+
+<p>
+    This inspection reports usages of <code>==</code> and <code>!=</code> operators
+    when comparing wrapper classes (e.g. <code>Integer</code>, <code>String</code>)
+    or Java collections (<code>List</code>, <code>Set</code>, <code>Map</code>).
+</p>
+
+<p>
+    Using <code>==</code> or <code>!=</code> on such types may lead to incorrect
+    behavior because it checks reference equality rather than value or emptiness.
+</p>
+
+<h3>Reported cases</h3>
+<ul>
+    <li><b>Wrapper types:</b>
+        <ul>
+            <li><code>a == null</code> → suggest <code>Objects.isNull(a)</code></li>
+            <li><code>a != null</code> → suggest <code>Objects.nonNull(a)</code></li>
+            <li><code>a == x</code> or <code>a != x</code> → suggest <code>Objects.equals(a, x)</code></li>
+        </ul>
+    </li>
+    <li><b>Collection types:</b>
+        <ul>
+            <li><code>list == null</code> → suggest <code>CollectionUtils.isEmpty(list)</code></li>
+            <li><code>list != null</code> → suggest <code>CollectionUtils.isNotEmpty(list)</code></li>
+        </ul>
+    </li>
+</ul>
+
+<h3>Quick Fix</h3>
+<p>
+    A quick fix is available to automatically replace the suspicious comparison
+    with the appropriate utility method from <code>java.util.Objects</code>
+    or <code>org.apache.commons.collections4.CollectionUtils</code>.
+</p>
+</body>
+</html>

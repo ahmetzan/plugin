@@ -19,7 +19,6 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        // IntelliJ Community Edition 2025.1 kullan
         create("IC", "2025.1")
 
         // Test framework
@@ -37,7 +36,7 @@ intellijPlatform {
             ide(IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")
             select {
                 types = listOf(IntelliJPlatformType.IntellijIdeaCommunity)
-                sinceBuild = "251.1"
+                sinceBuild = "241.1"
                 untilBuild = "251.1"
             }
         }
@@ -61,9 +60,5 @@ tasks {
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
-    }
-
-    publishPlugin{
-        token.set("perm-QWhtZXRfQ2FuX1phbg==.OTItMTMyNjg=.dneEP4XAH3LTJHZqwvtYK2hDEbqYGC")
     }
 }

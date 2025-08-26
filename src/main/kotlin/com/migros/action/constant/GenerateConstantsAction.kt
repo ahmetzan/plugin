@@ -1,6 +1,7 @@
 package com.migros.action.constant
 
 import com.intellij.ide.util.PackageChooserDialog
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -13,6 +14,7 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiModifier
 import com.intellij.psi.search.GlobalSearchScope
+import com.migros.utils.NotificationUtils
 
 class GenerateConstantsAction : AnAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
@@ -43,8 +45,17 @@ class GenerateConstantsAction : AnAction() {
             null
         ) ?: return
 
+        val existingClass = JavaDirectoryService.getInstance().getClasses(directory).firstOrNull {
+            it.name == newClassName
+        }
+
+        if (existingClass != null) {
+            NotificationUtils.showNotification(project, "Class '$newClassName' already exists in package ${selectedPackage.qualifiedName}", NotificationType.WARNING)
+            return
+        }
+
         // Case format seçimi
-        val options = arrayOf("SNAKE_CASE", "camelCase", "PascalCase")
+        val options = arrayOf("SNAKE_CASE", "snake_case", "camelCase", "PascalCase")
         val selectedCase = Messages.showEditableChooseDialog(
             "Select constant name format:",
             "Constant Case Format",
@@ -61,7 +72,7 @@ class GenerateConstantsAction : AnAction() {
 
             // Lombok @NoArgsConstructor(access = AccessLevel.PRIVATE)
             val annotation = psiFactory.createAnnotationFromText(
-                "@lombok.NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)", newClass
+                "@NoArgsConstructor(access = AccessLevel.PRIVATE)", newClass
             )
             newClass.modifierList?.addBefore(annotation, newClass.firstChild)
 
@@ -96,11 +107,14 @@ class GenerateConstantsAction : AnAction() {
                 newClass.add(constField)
             }
         }
+
+        NotificationUtils.showNotification(project, "Constants class '$newClassName' created successfully", NotificationType.INFORMATION)
     }
 
     private fun formatName(name: String, caseType: String): String {
         return when (caseType) {
             "SNAKE_CASE" -> name.replace(Regex("([a-z])([A-Z])"), "$1_$2").uppercase()
+            "snake_case" -> name.replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
             "camelCase" -> name.replaceFirstChar { it.lowercaseChar() }
             "PascalCase" -> name.replaceFirstChar { it.uppercaseChar() }
             else -> name

@@ -2,6 +2,7 @@ package com.migros.action.converter
 
 import com.intellij.ide.util.PackageChooserDialog
 import com.intellij.ide.util.TreeClassChooserFactory
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
@@ -9,7 +10,7 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.search.GlobalSearchScope
-import javax.swing.JOptionPane
+import com.migros.utils.NotificationUtils
 
 class GenerateConverterAction : AnAction() {
 
@@ -57,7 +58,7 @@ class GenerateConverterAction : AnAction() {
         }
 
         if (existingClass != null) {
-            JOptionPane.showMessageDialog(null, "Class '$newClassName' already exists in package ${selectedPackage.qualifiedName}!")
+            NotificationUtils.showNotification(project, "Class '$newClassName' already exists in package ${selectedPackage.qualifiedName}", NotificationType.WARNING)
             return
         }
 
@@ -93,7 +94,7 @@ class GenerateConverterAction : AnAction() {
             }
         }
 
-        JOptionPane.showMessageDialog(null, "Converter class '$newClassName' created successfully!")
+        NotificationUtils.showNotification(project, "Converter class '$newClassName' created successfully", NotificationType.INFORMATION)
     }
 
     private fun createConverterMethod(project: Project, sourceClass: PsiClass, targetClass: PsiClass) =

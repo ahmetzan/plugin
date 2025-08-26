@@ -1,6 +1,7 @@
 package com.migros.action.repository
 
 import com.intellij.ide.util.PackageChooserDialog
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -14,6 +15,7 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.search.GlobalSearchScope
+import com.migros.utils.NotificationUtils
 
 class GenerateRepositoryAction : AnAction() {
 
@@ -21,7 +23,14 @@ class GenerateRepositoryAction : AnAction() {
 
     override fun update(e: AnActionEvent) {
         val element = e.getData(CommonDataKeys.PSI_ELEMENT)
-        e.presentation.isEnabledAndVisible = element is PsiClass
+        if (element is PsiClass) {
+            val hasEntity = element.hasAnnotation("javax.persistence.Entity")
+                    || element.hasAnnotation("jakarta.persistence.Entity")
+
+            e.presentation.isEnabledAndVisible = hasEntity
+        } else {
+            e.presentation.isEnabledAndVisible = false
+        }
     }
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -50,7 +59,7 @@ class GenerateRepositoryAction : AnAction() {
         // Var mı kontrol et
         val existing = JavaDirectoryService.getInstance().getClasses(directory).firstOrNull { it.name == repoName }
         if (existing != null) {
-            Messages.showErrorDialog(project, "Repository class '$repoName' already exists!", "Error")
+            NotificationUtils.showNotification(project, "Repository class '$repoName' already exists", NotificationType.WARNING)
             return
         }
 
@@ -101,6 +110,6 @@ class GenerateRepositoryAction : AnAction() {
             newInterface.extendsList?.add(extendsRef)
         }
 
-        Messages.showInfoMessage(project, "Repository '$repoName' created successfully!", "Success")
+        NotificationUtils.showNotification(project, "Repository '$repoName' created successfully", NotificationType.INFORMATION)
     }
 }

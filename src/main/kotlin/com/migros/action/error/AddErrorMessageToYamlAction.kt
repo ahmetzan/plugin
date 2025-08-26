@@ -19,6 +19,7 @@ import com.intellij.psi.*
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
+import com.migros.utils.NotificationUtils
 
 class AddErrorMessageToYamlAction : AnAction() {
 
@@ -68,7 +69,7 @@ class AddErrorMessageToYamlAction : AnAction() {
             // Already exists?
             val keyRegex = Regex("(^|\\n)\\s{4}${Regex.escape(key)}:\\n", RegexOption.MULTILINE)
             if (keyRegex.containsMatchIn(original)){
-                showNotification(project, "Error Message Already Exists!", NotificationType.WARNING)
+                NotificationUtils.showNotification(project, "Error Message Already Exists", NotificationType.WARNING)
                 return@runWriteCommandAction
             }
 
@@ -105,21 +106,13 @@ class AddErrorMessageToYamlAction : AnAction() {
             PsiDocumentManager.getInstance(project).commitDocument(document)
             VfsUtil.markDirtyAndRefresh(true, false, false, yamlFile)
 
-            showNotification(project, "Error Message Created Successfully!", NotificationType.INFORMATION)
+            NotificationUtils.showNotification(project, "Error Message Created Successfully", NotificationType.INFORMATION)
             openYmlFile(project, yamlFile)
         }
 
     }
 
-    fun showNotification(project: Project, message : String, notificationType: NotificationType) {
-        NotificationGroupManager.getInstance()
-            .getNotificationGroup("Custom Notifications") // plugin.xml’de tanımlanacak ID
-            .createNotification(
-                message,
-                notificationType
-            )
-            .notify(project)
-    }
+
 
     private fun openYmlFile(project : Project, yamlFile : VirtualFile) {
 
@@ -142,10 +135,8 @@ class AddErrorMessageToYamlAction : AnAction() {
         val literal = literalAtCaret(file, editor) ?: return false
         val field = PsiTreeUtil.getParentOfType(literal, PsiField::class.java) ?: return false
         val cls = field.containingClass ?: return false
-        val fqn = cls.qualifiedName ?: return false
-        val pkg = fqn.substringBeforeLast('.', fqn)
 
-        val inConstantsClass = cls.name == "ErrorMessageConstants" && pkg.endsWith(".constants")
+        val inConstantsClass = cls.name == "ErrorMessageConstants"
         val isString = field.type.canonicalText == "java.lang.String"
         val hasModifiers = field.hasModifierProperty(PsiModifier.PUBLIC) &&
                 field.hasModifierProperty(PsiModifier.STATIC) &&
