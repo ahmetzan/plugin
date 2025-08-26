@@ -36,7 +36,7 @@ class TimeWidgetFactory : StatusBarWidgetFactory {
                 return object : StatusBarWidget.TextPresentation {
                     override fun getText(): String = LocalTime.now().withNano(0).toString()
                     override fun getTooltipText(): String? = "Time"
-                    override fun getAlignment(): Float = Component.LEFT_ALIGNMENT
+                    override fun getAlignment(): Float = Component.CENTER_ALIGNMENT
                 }
             }
         }
