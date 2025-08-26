@@ -25,25 +25,19 @@ class GenerateConverterAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val module = e.getData(LangDataKeys.MODULE) ?: return
         val sourceClass = e.getData(CommonDataKeys.PSI_ELEMENT) as? PsiClass ?: return
 
-        // 1. DTO seçimi
         val chooser = TreeClassChooserFactory.getInstance(project)
             .createAllProjectScopeChooser("Select Target DTO Class")
         chooser.showDialog()
         val targetClass = chooser.selected ?: return
 
-        // 2. Package seçimi
         val packageChooser = PackageChooserDialog("Select Package for Converter", project)
         packageChooser.show()
         val selectedPackage = packageChooser.selectedPackage ?: return
         val directory: PsiDirectory = selectedPackage.directories.firstOrNull() ?: return
 
-        // 3. Class adı oluşturma
         val defaultClassName = "${sourceClass.name}To${targetClass.name}Converter"
-
-// 4. Kullanıcıya input dialog ile isim sor
         val newClassName = Messages.showInputDialog(
             project,
             "Enter converter class name:",
@@ -51,7 +45,7 @@ class GenerateConverterAction : AnAction() {
             Messages.getQuestionIcon(),
             defaultClassName,
             null
-        ) ?: return // Cancel basılırsa iptal et
+        ) ?: return
 
         val existingClass = JavaDirectoryService.getInstance().getClasses(directory).firstOrNull {
             it.name == newClassName
@@ -62,7 +56,6 @@ class GenerateConverterAction : AnAction() {
             return
         }
 
-        // 4. Yeni class oluşturma ve metot ekleme
         WriteCommandAction.runWriteCommandAction(project) {
             val newClass = JavaDirectoryService.getInstance().createClass(directory, newClassName)
             val converterMethod = createConverterMethod(project, sourceClass, targetClass)
@@ -78,7 +71,7 @@ class GenerateConverterAction : AnAction() {
             val psiFile = newClass.containingFile as? PsiJavaFile ?: return@runWriteCommandAction
             psiFile.let { file ->
                 val psiFacade = JavaPsiFacade.getInstance(project)
-                val componentClass = psiFacade.findClass("org.springframework.stereotype.Component", GlobalSearchScope.moduleScope(module))
+                val componentClass = psiFacade.findClass("org.springframework.stereotype.Component", GlobalSearchScope.projectScope(project))
                 if (componentClass != null) {
                     file.importList?.add(psiFacade.elementFactory.createImportStatement(componentClass))
                 }

@@ -1,41 +1,48 @@
-package com.migros.hook
+package com.migros.commit
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vcs.CheckinProjectPanel
 import com.intellij.openapi.vcs.checkin.CheckinHandler
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent
+import com.intellij.ui.components.JBCheckBox
 import java.awt.BorderLayout
-import javax.swing.JCheckBox
+import java.io.File
+import javax.swing.BorderFactory
+import javax.swing.JComponent
 import javax.swing.JPanel
-import java.io.File;
 
 class CommitMessageCheckHandler(private val panel: CheckinProjectPanel) : CheckinHandler() {
 
     private var shouldCheck = true
 
     override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent {
-        val checkbox = JCheckBox("Check commit message format", true)
-        val panelUI = JPanel(BorderLayout()).apply {
-            add(checkbox, BorderLayout.CENTER)
-        }
+        val checkbox = JBCheckBox("Check commit message format", shouldCheck)
 
         return object : RefreshableOnComponent {
-            override fun getComponent() = panelUI
-//            override fun refresh() {}
-            override fun saveState() {
-                shouldCheck = checkbox.isSelected
+            override fun getComponent(): JComponent {
+                val jPanel = JPanel(BorderLayout()).apply {
+                    border = BorderFactory.createEmptyBorder(4, 6, 4, 6)
+                    add(checkbox, BorderLayout.CENTER)
+                }
+                return jPanel
             }
+
             override fun restoreState() {
                 checkbox.isSelected = shouldCheck
             }
+
+            override fun saveState() {
+                shouldCheck = checkbox.isSelected
+            }
+
         }
     }
 
     override fun beforeCheckin(): ReturnResult {
         if (!shouldCheck) return ReturnResult.COMMIT
 
-        val commitMessage = panel.commitMessage?.trim().orEmpty()
+        val commitMessage = panel.commitMessage.trim()
         val branchName = getGitBranchName(panel.project) ?: return ReturnResult.COMMIT
 
         val prefix = extractPrefixFromBranch(branchName) ?: return ReturnResult.COMMIT

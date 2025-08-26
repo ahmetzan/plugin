@@ -1,4 +1,4 @@
-package com.migros.hook
+package com.migros.commit
 
 import com.intellij.openapi.vcs.CheckinProjectPanel
 import com.intellij.openapi.vcs.changes.CommitContext

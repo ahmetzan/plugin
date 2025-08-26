@@ -1,6 +1,5 @@
 package com.migros.action.error
 
-import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
@@ -24,7 +23,6 @@ import com.migros.utils.NotificationUtils
 class AddErrorMessageToYamlAction : AnAction() {
 
     override fun getActionUpdateThread(): ActionUpdateThread {
-        // update()'i background thread'te çalıştır
         return ActionUpdateThread.BGT
     }
 
@@ -37,21 +35,12 @@ class AddErrorMessageToYamlAction : AnAction() {
             presentation.isEnabledAndVisible = false
             return
         }
-        // Ağır PSI erişimlerini burada güvenle yapabilirsin
+
         presentation.isEnabledAndVisible = isOnEligibleLiteral(file, editor)
     }
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val editor = e.getData(CommonDataKeys.EDITOR) ?: return
-        val file = e.getData(CommonDataKeys.PSI_FILE) ?: return
-
-        val literal = runReadAction { literalAtCaret(file, editor) } ?: return
-        val key = (literal.value as? String)?.takeIf { it.isNotBlank() } ?: return
-
-        val yamlFile = findTargetYaml(project) ?: return
-        val psiYaml = PsiManager.getInstance(project).findFile(yamlFile) ?: return
-        val document = PsiDocumentManager.getInstance(project).getDocument(psiYaml) ?: return
 
         val newClassName = Messages.showInputDialog(
             project,
@@ -62,11 +51,20 @@ class AddErrorMessageToYamlAction : AnAction() {
             null
         ) ?: return
 
+        val editor = e.getData(CommonDataKeys.EDITOR) ?: return
+        val file = e.getData(CommonDataKeys.PSI_FILE) ?: return
+
+        val literal = runReadAction { literalAtCaret(file, editor) } ?: return
+        val key = (literal.value as? String)?.takeIf { it.isNotBlank() } ?: return
+
+        val ymlFile = findTargetYml(project) ?: return
+        val psiYaml = PsiManager.getInstance(project).findFile(ymlFile) ?: return
+        val document = PsiDocumentManager.getInstance(project).getDocument(psiYaml) ?: return
+
         WriteCommandAction.runWriteCommandAction(project) {
             PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(document)
             val original = document.text
 
-            // Already exists?
             val keyRegex = Regex("(^|\\n)\\s{4}${Regex.escape(key)}:\\n", RegexOption.MULTILINE)
             if (keyRegex.containsMatchIn(original)){
                 NotificationUtils.showNotification(project, "Error Message Already Exists", NotificationType.WARNING)
@@ -79,7 +77,6 @@ class AddErrorMessageToYamlAction : AnAction() {
             if (!hasRoot) builder.append("error:\n")
             if (!hasMessages) builder.append("  messages:\n")
 
-            // Compute service-specific prefix (PRODUCT, ASSET, PRICE, ...)
             val prefix = runReadAction { inferServicePrefix(literal, builder.toString()) }
 
             val codeRegex = Regex("code:\\s*\"${Regex.escape(prefix)}-([0-9]{4})\"")
@@ -104,10 +101,10 @@ class AddErrorMessageToYamlAction : AnAction() {
 
             document.setText(builder.toString())
             PsiDocumentManager.getInstance(project).commitDocument(document)
-            VfsUtil.markDirtyAndRefresh(true, false, false, yamlFile)
+            VfsUtil.markDirtyAndRefresh(true, false, false, ymlFile)
 
             NotificationUtils.showNotification(project, "Error Message Created Successfully", NotificationType.INFORMATION)
-            openYmlFile(project, yamlFile)
+            openYmlFile(project, ymlFile)
         }
 
     }
@@ -151,11 +148,10 @@ class AddErrorMessageToYamlAction : AnAction() {
         return PsiTreeUtil.getParentOfType(element, PsiLiteralExpression::class.java, false)
     }
 
-    private fun findTargetYaml(project: Project): VirtualFile? {
+    private fun findTargetYml(project: Project): VirtualFile? {
         val scope = GlobalSearchScope.projectScope(project)
-        // Tek bir dosya adıyla arıyoruz
-        val matches = FilenameIndex.getVirtualFilesByName("error_messages.yml", scope)
-        // Öncelik: src/main/resources > resources > diğer
+        val matches: Set<VirtualFile> =
+            FilenameIndex.getVirtualFilesByName("error_messages.yml", scope).toSet()
         return matches.minByOrNull { vf ->
             val p = vf.path
             when {
@@ -167,11 +163,9 @@ class AddErrorMessageToYamlAction : AnAction() {
     }
 
     private fun inferServicePrefix(literal: PsiLiteralExpression, yamlText: String): String {
-        // 1) Prefer existing prefix from YAML if any (e.g., PRODUCT-0007)
         val existing = Regex("code:\\s*\"([A-Z]+)-([0-9]{4})\"").find(yamlText)?.groupValues?.get(1)
         if (!existing.isNullOrBlank()) return existing
 
-        // 2) Fallback to package: com.migros.<service>...
         val field = PsiTreeUtil.getParentOfType(literal, PsiField::class.java) ?: return "GEN"
         val cls = field.containingClass ?: return "GEN"
         val parts = (cls.qualifiedName ?: "").split('.')

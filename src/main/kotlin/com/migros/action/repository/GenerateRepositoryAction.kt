@@ -38,13 +38,11 @@ class GenerateRepositoryAction : AnAction() {
         val module = e.getData(LangDataKeys.MODULE) ?: return
         val entityClass = e.getData(CommonDataKeys.PSI_ELEMENT) as? PsiClass ?: return
 
-        // Paket seçimi
         val packageChooser = PackageChooserDialog("Select Package for Repository", project)
         packageChooser.show()
         val selectedPackage = packageChooser.selectedPackage ?: return
         val directory = selectedPackage.directories.firstOrNull() ?: return
 
-        // Repository ismi
         val defaultRepoName = "${entityClass.name}Repository"
 
         val repoName = Messages.showInputDialog(
@@ -56,7 +54,6 @@ class GenerateRepositoryAction : AnAction() {
             null
         ) ?: return
 
-        // Var mı kontrol et
         val existing = JavaDirectoryService.getInstance().getClasses(directory).firstOrNull { it.name == repoName }
         if (existing != null) {
             NotificationUtils.showNotification(project, "Repository class '$repoName' already exists", NotificationType.WARNING)
@@ -72,9 +69,6 @@ class GenerateRepositoryAction : AnAction() {
                 val annotation = psiElementFactory.createAnnotationFromText("@org.springframework.stereotype.Repository", newInterface)
                 modifierList.addBefore(annotation, modifierList.firstChild)
             }
-
-            // Entity class import
-//            JavaCodeStyleManager.getInstance(project).addImport(newInterface.containingFile as PsiJavaFile, entityClass)
 
             val psiFile = newInterface.containingFile as? PsiJavaFile ?: return@runWriteCommandAction
             psiFile.let { file ->
@@ -94,7 +88,6 @@ class GenerateRepositoryAction : AnAction() {
                 JavaCodeStyleManager.getInstance(project).shortenClassReferences(file)
             }
 
-            // Burada id tipini almak istersen, örneğin ilk field tipi (basitçe):
             val idField = entityClass.allFields.firstOrNull { field ->
                 field.annotations.any { annotation ->
                     annotation.qualifiedName == "javax.persistence.Id" || annotation.qualifiedName == "jakarta.persistence.Id"

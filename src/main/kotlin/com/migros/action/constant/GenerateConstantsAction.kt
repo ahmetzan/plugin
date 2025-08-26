@@ -19,6 +19,10 @@ import com.migros.utils.NotificationUtils
 class GenerateConstantsAction : AnAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
+    companion object {
+        val CAMEL_TO_SNAKE_REGEX = Regex("([a-z])([A-Z])")
+    }
+
     override fun update(e: AnActionEvent) {
         val element = e.getData(CommonDataKeys.PSI_ELEMENT)
         e.presentation.isEnabledAndVisible = element is PsiClass
@@ -26,15 +30,13 @@ class GenerateConstantsAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val psiClass = e.getData(CommonDataKeys.PSI_ELEMENT) as? PsiClass ?: return
 
-        // Paket seçimi
         val packageChooser = PackageChooserDialog("Select Package for Constants", project)
         packageChooser.show()
         val selectedPackage = packageChooser.selectedPackage ?: return
         val directory = selectedPackage.directories.firstOrNull() ?: return
 
-        // Class adı input
+        val psiClass = e.getData(CommonDataKeys.PSI_ELEMENT) as? PsiClass ?: return
         val defaultClassName = "${psiClass.name}Constants"
         val newClassName = Messages.showInputDialog(
             project,
@@ -54,7 +56,6 @@ class GenerateConstantsAction : AnAction() {
             return
         }
 
-        // Case format seçimi
         val options = arrayOf("SNAKE_CASE", "snake_case", "camelCase", "PascalCase")
         val selectedCase = Messages.showEditableChooseDialog(
             "Select constant name format:",
@@ -70,13 +71,11 @@ class GenerateConstantsAction : AnAction() {
             val newClass = JavaDirectoryService.getInstance().createClass(directory, newClassName)
             newClass.modifierList?.setModifierProperty(PsiModifier.FINAL, true)
 
-            // Lombok @NoArgsConstructor(access = AccessLevel.PRIVATE)
             val annotation = psiFactory.createAnnotationFromText(
                 "@NoArgsConstructor(access = AccessLevel.PRIVATE)", newClass
             )
             newClass.modifierList?.addBefore(annotation, newClass.firstChild)
 
-            // Import lombok classes
             val file = newClass.containingFile as? PsiJavaFile
             val psiFacade = JavaPsiFacade.getInstance(project)
             val noArgsClass = psiFacade.findClass("lombok.NoArgsConstructor", GlobalSearchScope.allScope(project))
@@ -88,7 +87,7 @@ class GenerateConstantsAction : AnAction() {
                 file?.importList?.add(psiFactory.createImportStatement(accessLevelClass))
             }
 
-            val classConstName = psiClass.name?.replace(Regex("([a-z])([A-Z])"), "$1_$2")?.uppercase()
+            val classConstName = psiClass.name?.replace(CAMEL_TO_SNAKE_REGEX, "$1_$2")?.uppercase()
             val classConstValue = formatName(psiClass.name ?: "", selectedCase)
             val classConstField = psiFactory.createFieldFromText(
                 "public static final String $classConstName = \"$classConstValue\";",
@@ -96,9 +95,8 @@ class GenerateConstantsAction : AnAction() {
             )
             newClass.add(classConstField)
 
-            // Field constant ekleme
             psiClass.allFields.forEach { field ->
-                val constName = field.name.replace(Regex("([a-z])([A-Z])"), "$1_$2").uppercase()
+                val constName = field.name.replace(CAMEL_TO_SNAKE_REGEX, "$1_$2").uppercase()
                 val value = formatName(field.name, selectedCase)
                 val constField = psiFactory.createFieldFromText(
                     "public static final String $constName = \"${value}\";",
@@ -113,8 +111,8 @@ class GenerateConstantsAction : AnAction() {
 
     private fun formatName(name: String, caseType: String): String {
         return when (caseType) {
-            "SNAKE_CASE" -> name.replace(Regex("([a-z])([A-Z])"), "$1_$2").uppercase()
-            "snake_case" -> name.replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
+            "SNAKE_CASE" -> name.replace(CAMEL_TO_SNAKE_REGEX, "$1_$2").uppercase()
+            "snake_case" -> name.replace(CAMEL_TO_SNAKE_REGEX, "$1_$2").lowercase()
             "camelCase" -> name.replaceFirstChar { it.lowercaseChar() }
             "PascalCase" -> name.replaceFirstChar { it.uppercaseChar() }
             else -> name

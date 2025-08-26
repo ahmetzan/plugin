@@ -19,7 +19,6 @@ class ReplaceWithObjectsFix(
         val element = descriptor.psiElement as? PsiBinaryExpression ?: return
         val factory = JavaPsiFacade.getElementFactory(project)
 
-        // yeni ifade
         val newExpr = factory.createExpressionFromText(replacement, element.context)
         val file = element.containingFile as? PsiJavaFile
 

@@ -9,7 +9,7 @@ class NotificationUtils {
     companion object  {
         fun showNotification(project: Project, message : String, notificationType: NotificationType) {
             NotificationGroupManager.getInstance()
-                .getNotificationGroup("Custom Notifications") // plugin.xml’de tanımlanacak ID
+                .getNotificationGroup("Custom Notifications")
                 .createNotification(
                     message,
                     notificationType

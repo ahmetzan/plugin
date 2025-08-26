@@ -62,7 +62,8 @@
                 level="WARNING"
                 implementationClass="com.migros.inspection.EqualityInspection"/>
 
-        <checkinHandlerFactory implementation="com.migros.hook.CommitMessageCheckFactory"/>
+        <checkinHandlerFactory implementation="com.migros.commit.CommitMessageCheckFactory"/>
 
     </extensions>
+
 </idea-plugin>
