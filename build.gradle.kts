@@ -21,10 +21,8 @@ dependencies {
     intellijPlatform {
         create("IC", "2025.1")
 
-        // Test framework
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
 
-        // Java PSI API için gerekli plugin
         bundledPlugin("com.intellij.java")
     }
 }
