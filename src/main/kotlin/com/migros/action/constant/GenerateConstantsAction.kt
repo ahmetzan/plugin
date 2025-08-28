@@ -17,11 +17,12 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.migros.utils.NotificationUtils
 
 class GenerateConstantsAction : AnAction() {
-    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     companion object {
         val CAMEL_TO_SNAKE_REGEX = Regex("([a-z])([A-Z])")
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun update(e: AnActionEvent) {
         val element = e.getData(CommonDataKeys.PSI_ELEMENT)
